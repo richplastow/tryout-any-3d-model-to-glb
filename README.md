@@ -40,6 +40,6 @@ npm install --global typescript
 # added 1 package in 709ms
 tsc --version
 # Version 5.9.3
-tsc --noEmit && echo "no type-errors found"
-# no type-errors found
+npm check-types
+# ✅ No type-errors found!
 ```

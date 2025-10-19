@@ -18,7 +18,8 @@
   },
   "scripts": {
     "build": "rollup -i any-3d-model-to-glb.js -o dist/any-3d-model-to-glb.js",
-    "check-types": "tsc --noEmit",
+    "check-types": "tsc --noEmit && echo '\\xE2\\x9C\\x85 No type-errors found!'",
+    "ok": "npm test && npm run check-types && npm run build",
     "test": "node test.js"
   },
   "devDependencies": {
