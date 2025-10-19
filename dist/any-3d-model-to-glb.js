@@ -11,15 +11,40 @@
 /** #### Validates a file path argument
  * Used by any3dModelToGlb()
  * @param {string} fnName  The name of the function being validated
- * @param {string} argName  The name of the argument being validated
+ * @param {'inputPath'|'outputPath'} argName  The name of the argument being validated
  * @param {string} path  The file path to validate
  * @throws {RangeError}  If the argument is not a string
  */
 const validatePath = (fnName, argName, path) => {
     const xpx = `${fnName}(): Invalid`; // exception prefix
 
+    // Should be a string, non-empty, max length 1000.
     if (typeof path !== 'string') throw RangeError(
         `${xpx} ${argName} argument type '${typeof path}', should be 'string'`);
+    if (path.length === 0) throw RangeError(
+        `${xpx} ${argName} argument is an empty string, should be a valid file path`);
+    if (path.length > 1000) throw RangeError(
+        `${xpx} ${argName} argument length ${path.length} exceeds maximum of 1000 characters`);
+
+    // Check for invalid exFAT characters (also invalid on most file systems)
+    // exFAT disallows: < > : " / \ | ? *
+    // Also disallow control characters U+0000 through U+001F
+    const invalidChars = /[<>:"|?*\x00-\x1F]/;
+    if (invalidChars.test(path)) throw RangeError(
+        `${xpx} ${argName} argument '${path}' contains invalid characters for file paths`);
+
+    const ext = path.match(/\.([a-z0-9]{1,9})$/);
+    if (!ext) throw RangeError(
+        `${xpx} ${argName} argument has no valid file extension`);
+    if (argName === 'outputPath' && ext[1] !== 'glb') throw RangeError(
+        `${xpx} ${argName} argument extension '.${ext[1]}' is not supported, should be '.glb'`);
+    if (argName === 'inputPath') {
+        const validInputExtensions = new Set([
+            '3mf', '3mfz', 'fbx', 'gltf', 'glb', 'obj', 'ply', 'stl', 'wrl', 'wrz', // TODO refine this list
+        ]);
+        if (!validInputExtensions.has(ext[1])) throw RangeError(
+            `${xpx} ${argName} argument extension '.${ext[1]}' is not a supported 3D model format`);
+    }
 };
 
 /** #### Validate the any3dModelToGlb() options argument

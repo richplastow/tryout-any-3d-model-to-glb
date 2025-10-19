@@ -15,13 +15,9 @@
 3. `node examples/run-03.js` TODO
 4. `node examples/run-04.js` TODO
 
-## Unit tests
-
-`npm test`
-
 ## Install and build
 
-```zsh
+```bash
 npm install --global rollup
 # added 4 packages, and audited 5 packages in 1s
 rollup --version
@@ -31,15 +27,34 @@ npm install
 npm run build
 # any-3d-model-to-glb.js → dist/any-3d-model-to-glb.js...
 # created dist/any-3d-model-to-glb.js in 32ms
+# ✅ Build succeeded!
 ```
 
 ## Check types
 
-```zsh
+```bash
 npm install --global typescript
 # added 1 package in 709ms
 tsc --version
 # Version 5.9.3
 npm check-types
 # ✅ No type-errors found!
+```
+
+## Unit tests
+
+```bash
+npm test
+# ...
+# OK: All any3dModelToGlb() tests passed!
+# ✅ All tests passed!
+```
+
+## Preflight, before each commit
+
+```bash
+npm run ok
+# ...runs tests, checks types, and rebuilds the dist/ file
+# ...
+# ✅ Build succeeded!
 ```
