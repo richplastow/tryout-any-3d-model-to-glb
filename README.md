@@ -29,8 +29,8 @@ rollup --version
 npm install
 # (only installs the "@types/node" dev-dependency, ~3 MB for ~150 items)
 npm run build
-# tryout-any-3d-model-to-glb.mjs → docs/tryout-any-3d-model-to-glb.js...
-# created docs/tryout-any-3d-model-to-glb.js in 32ms
+# any-3d-model-to-glb.js → dist/any-3d-model-to-glb.js...
+# created dist/any-3d-model-to-glb.js in 32ms
 ```
 
 ## Check types

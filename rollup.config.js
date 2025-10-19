@@ -1,0 +1,14 @@
+const config = [
+    {
+        input: 'any-3d-model-to-glb.js',
+        output: {
+            file: 'dist/any-3d-model-to-glb.js',
+            format: 'esm',
+            sourcemap: false,
+        },
+        external: ['node:fs/promises'],
+        plugins: []
+    }
+];
+
+export default config;
