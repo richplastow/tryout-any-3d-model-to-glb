@@ -1,0 +1,28 @@
+{
+  "name": "tryout-any-3d-model-to-glb",
+  "version": "0.0.1",
+  "description": "Node.js utility to convert various 3D model formats to GLB",
+  "keywords": [
+    "3d",
+    "glb"
+  ],
+  "homepage": "https://richplastow.com/tryout-any-3d-model-to-glb/",
+  "bugs": {
+    "url": "https://github.com/richplastow/tryout-any-3d-model-to-glb/issues"
+  },
+  "license": "MIT",
+  "author": "Rich Plastow",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/richplastow/tryout-any-3d-model-to-glb.git"
+  },
+  "scripts": {
+    "build": "rollup -i any-3d-model-to-glb.js -o dist/any-3d-model-to-glb.js",
+    "check-types": "tsc --noEmit",
+    "test": "node test.js"
+  },
+  "devDependencies": {
+    "@types/node": "^24.8.1"
+  },
+  "type": "module"
+}
