@@ -9,17 +9,6 @@
 - Repo: <https://github.com/richplastow/tryout-any-3d-model-to-glb>
 - Demo: <https://richplastow.com/tryout-any-3d-model-to-glb/>
 
-## Install
-
-There's just one runtime dependency,
-[assimpjs](https://www.npmjs.com/package/assimpjs), which is a WebAssembly port
-of the [Assimp](https://www.assimp.org/) 3D model import/export library.
-
-```bash
-npm install --production
-# installs assimpjs (not dev-dependencies), ~12 MB for ~200 items
-```
-
 ## Browser usage
 
 The demo page docs/index.html provides an easy-to-follow example of how to use
@@ -42,6 +31,17 @@ npx http-server docs
 
 Then visit <http://localhost:8080> in a modern browser.
 
+## Install
+
+There's just one runtime dependency,
+[assimpjs](https://www.npmjs.com/package/assimpjs), which is a WebAssembly port
+of the [Assimp](https://www.assimp.org/) 3D model import/export library.
+
+```bash
+npm install --omit=dev
+# installs assimpjs (not dev-dependencies), ~12 MB for ~200 items
+```
+
 ## Command-line usage
 
 ```bash
@@ -58,6 +58,10 @@ Check the results in example-outputs/ after running each example, and drag them
 into <https://playcanvas.com/model-viewer> to check they look right.
 
 1. `node examples/01-cube-obj/example-01.js` Converts a simple cube.obj to GLB format
+2. `node examples/02-teapot-dae/example-02.js` Converts teapot.dae to GLB format
+3. `node examples/03-suzanne-gltf/example-03.js` Converts suzanne.gltf to GLB format
+4. `node examples/04-bunny-stl/example-04.js` Converts bunny.stl to GLB format
+5. `node examples/05-cow-fbx/example-05.js` Converts cow.fbx to GLB format
 
 ## Contributing
 

@@ -2,6 +2,7 @@
 
 export const VALID_INPUT_EXTENSIONS = new Set([
     'dae',
+    'fbx',
     'glb',
     'gltf',
     'obj',
