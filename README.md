@@ -8,12 +8,35 @@
 - License: MIT
 - Repo: <https://github.com/richplastow/tryout-any-3d-model-to-glb>
 
+## Install
+
+There's just one runtime dependency,
+[assimpjs](https://www.npmjs.com/package/assimpjs), which is a WebAssembly port
+of the [Assimp](https://www.assimp.org/) 3D model import/export library.
+
+```bash
+npm install --production
+# installs assimpjs (not dev-dependencies), ~12 MB for ~200 items
+```
+
+## Command-line usage
+
+```bash
+node any-3d-model-to-glb.js examples/models/cube.obj output.glb
+# ✅ Wrote output.glb (228 bytes)
+
+node any-3d-model-to-glb.js --help
+# ...shows CLI usage
+```
+
 ## Examples
 
 1. `node examples/run-01.js` TODO
 2. `node examples/run-02.js` TODO
 3. `node examples/run-03.js` TODO
 4. `node examples/run-04.js` TODO
+
+## Contributing
 
 ## Install and build
 
@@ -31,7 +54,7 @@ npm run build
 # ✅ Build succeeded!
 ```
 
-## Check types
+### Check types
 
 ```bash
 npm install --global typescript
@@ -42,7 +65,7 @@ npm check-types
 # ✅ No type-errors found!
 ```
 
-## Unit tests
+### Unit tests
 
 ```bash
 npm test
@@ -51,7 +74,7 @@ npm test
 # ✅ All tests passed!
 ```
 
-## Preflight, before each commit
+### Preflight, before each commit
 
 ```bash
 npm run ok
