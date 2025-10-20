@@ -2,8 +2,8 @@ import { deepStrictEqual as deep, rejects } from 'node:assert';
 import { any3dModelToGlb as fn } from './any-3d-model-to-glb.js';
 
 /**
- * @typedef {import('./any-3d-model-to-glb.js').ReadFile} ReadFile
- * @typedef {import('./any-3d-model-to-glb.js').WriteFile} WriteFile
+ * @typedef {import('./src/types.js').ReadFile} ReadFile
+ * @typedef {import('./src/types.js').WriteFile} WriteFile
  */
 
 // Mocks reading a file, by returning dummy data and recording `path`.
@@ -60,7 +60,7 @@ export const testAny3dModelToGlb = async () => {
     // SUCCESS
 
     deep(
-        await fn('input.obj', 'output.glb', {}, mockReadFile, mockWriteFile),
+        await fn('input.obj', 'output.glb', { noticeLevel: 1 }, mockReadFile, mockWriteFile),
         {
             didSucceed: true,
             notices: [

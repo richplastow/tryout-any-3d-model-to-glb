@@ -31,10 +31,10 @@ node any-3d-model-to-glb.js --help
 
 ## Examples
 
-1. `node examples/run-01.js` TODO
-2. `node examples/run-02.js` TODO
-3. `node examples/run-03.js` TODO
-4. `node examples/run-04.js` TODO
+Check the results in example-outputs/ after running each example, and drag them
+into <https://playcanvas.com/model-viewer> to check they look right.
+
+1. `node examples/01-cube-obj/example-01.js` Converts a simple cube.obj to GLB format
 
 ## Contributing
 

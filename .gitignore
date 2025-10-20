@@ -10,6 +10,5 @@ node_modules
 # debug
 npm-debug.log*
 
-# dev
-input.*
-output.*
+# example output GLBs
+example-outputs/*.glb

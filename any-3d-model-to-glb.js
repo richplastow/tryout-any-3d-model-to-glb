@@ -7,11 +7,8 @@ import { validateOptionsObject, validateOptionsProps, validatePath } from "./src
 /**
  * @typedef {import('./src/validate-arg.js').OptionsArgument} OptionsArgument
  * @typedef {import('./src/validate-arg.js').DefaultedOptions} DefaultedOptions
- */
-
-/**
- * @typedef {(path: string) => Promise<string>} ReadFile
- * @typedef {(path: string, data: string) => Promise<void>} WriteFile
+ * @typedef {import('./src/types.js').ReadFile} ReadFile
+ * @typedef {import('./src/types.js').WriteFile} WriteFile
  */
 
 /** #### Converts various 3D model formats to GLB
@@ -19,8 +16,8 @@ import { validateOptionsObject, validateOptionsProps, validatePath } from "./src
  * @param {string} inputPath  Location of the input 3D model file
  * @param {string} outputPath  Location to write the output GLB file
  * @param {OptionsArgument} [options={}]  Configures the conversion
- * @param {ReadFile} [readFile] Optional async function to read a file - useful for testing/mocking
- * @param {WriteFile} [writeFile] Optional async function to write a file - useful for testing/mocking
+ * @param {ReadFile} [readFile] Optional async function to read a file - useful for browsers, and testing
+ * @param {WriteFile} [writeFile] Optional async function to write a file - useful for browsers, and testing
  * @returns  Promise which resolves when conversion is complete
  */
 export async function any3dModelToGlb(
@@ -174,10 +171,9 @@ if (
 
     if (didSucceed) {
         console.log(`✅ Conversion succeeded${noticesToDisplay}`);
+        process.exit(0);
     } else {
-        console.error(
-            `❌ Conversion failed:${noticesToDisplay}`
-        );
+        console.error(`❌ Conversion failed:${noticesToDisplay}`);
         process.exit(1);
     }
 }
