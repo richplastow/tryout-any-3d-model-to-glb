@@ -2,7 +2,7 @@ const config = [
     {
         input: 'any-3d-model-to-glb.js',
         output: {
-            file: 'dist/any-3d-model-to-glb.js',
+            file: 'docs/any-3d-model-to-glb.js',
             format: 'esm',
             sourcemap: false,
         },

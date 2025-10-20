@@ -1,4 +1,4 @@
-import { any3dModelToGlb } from '../../dist/any-3d-model-to-glb.js';
+import { any3dModelToGlb } from '../../any-3d-model-to-glb.js';
 
 /**
  * @typedef {import('./src/types.js').WriteFile} WriteFile

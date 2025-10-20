@@ -12,7 +12,7 @@
   },
   "license": "MIT",
   "author": "Rich Plastow",
-  "main": "./dist/any-3d-model-to-glb.js",
+  "main": "./docs/any-3d-model-to-glb.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/richplastow/tryout-any-3d-model-to-glb.git"

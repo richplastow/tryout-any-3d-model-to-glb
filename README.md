@@ -49,8 +49,8 @@ npm install
 # installs the "@types/node" dev-dependency, and assimpjs -
 # ~12 MB for ~200 items
 npm run build
-# any-3d-model-to-glb.js → dist/any-3d-model-to-glb.js...
-# created dist/any-3d-model-to-glb.js in 32ms
+# any-3d-model-to-glb.js → docs/any-3d-model-to-glb.js...
+# created docs/any-3d-model-to-glb.js in 32ms
 # ✅ Build succeeded!
 ```
 
@@ -78,7 +78,7 @@ npm test
 
 ```bash
 npm run ok
-# ...runs tests, checks types, and rebuilds the dist/ file
+# ...runs tests, checks types, and rebuilds the bundle-file in docs/
 # ...
 # ✅ Build succeeded!
 ```
