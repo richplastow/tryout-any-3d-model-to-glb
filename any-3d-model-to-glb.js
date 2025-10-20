@@ -11,6 +11,17 @@ import { validateOptionsObject, validateOptionsProps, validatePath } from "./src
  * @typedef {import('./src/types.js').WriteFile} WriteFile
  */
 
+// Initialize AssimpJS. In Node the 'assimpjs' library is loaded here, but in
+// the browser `<script type="text/javascript" src="assimpjs.js"></script>`
+// has already loaded it into global (window) scope.
+const isNode = typeof process === 'object' && typeof window === 'undefined';
+const initAssimpjs = async () => {
+    const assimpjsModule = await import('assimpjs');
+    return assimpjsModule.default();
+}
+// @ts-expect-error
+const assimp = isNode ? await initAssimpjs() : await window.assimpjs();
+
 /** #### Converts various 3D model formats to GLB
  * 
  * @param {string} inputPath  Location of the input 3D model file
@@ -26,14 +37,14 @@ export async function any3dModelToGlb(
     options = {},
     readFile = async (path) => {
         const fs = await import("node:fs/promises");
-        return fs.readFile(path, "utf-8");
+        return fs.readFile(path);
     },
     writeFile = async (
         path,
         data,
     ) => {
         const fs = await import("node:fs/promises");
-        return fs.writeFile(path, data, "utf-8");
+        return fs.writeFile(path, data);
     },
 ) {
     const fn = 'any3dModelToGlb'; // function name
@@ -80,7 +91,11 @@ export async function any3dModelToGlb(
         notices.push({ code: 1_5118, message: `Converting ${filename}` });
     let outputData;
     try {
-        outputData = await convertModel(filename, new Uint8Array(Buffer.from(inputData)));
+        outputData = await convertModel(
+            assimp,
+            filename,
+            new Uint8Array(inputData)
+        );
     } catch (error) {
         notices.push({
             code: 4_9480,

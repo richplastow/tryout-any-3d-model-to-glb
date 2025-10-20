@@ -7,6 +7,7 @@
 - Updated: 2025-10-18 by Rich Plastow
 - License: MIT
 - Repo: <https://github.com/richplastow/tryout-any-3d-model-to-glb>
+- Demo: <https://richplastow.com/tryout-any-3d-model-to-glb/>
 
 ## Install
 
@@ -18,6 +19,28 @@ of the [Assimp](https://www.assimp.org/) 3D model import/export library.
 npm install --production
 # installs assimpjs (not dev-dependencies), ~12 MB for ~200 items
 ```
+
+## Browser usage
+
+The demo page docs/index.html provides an easy-to-follow example of how to use
+tryout-any-3d-model-to-glb in the browser. To run the demo locally, serve the
+docs/ folder using a simple HTTP server, for example:
+
+```bash
+npx http-server docs
+# Need to install the following packages:
+# http-server@14.1.1
+# Ok to proceed? (y) y
+# ...
+# CORS: disabled
+# ...
+# Available on:
+#   http://127.0.0.1:8080
+# ...
+# Hit CTRL-C to stop the server
+```
+
+Then visit <http://localhost:8080> in a modern browser.
 
 ## Command-line usage
 

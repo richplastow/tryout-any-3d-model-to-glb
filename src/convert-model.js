@@ -1,9 +1,6 @@
 /** @fileoverview Converts a 3D model to GBL format */
 
-import initAssimpjs from 'assimpjs';
 import { VALID_INPUT_EXTENSIONS } from './constants.js';
-
-let assimpjs = null;
 
 /** #### Converts 3D model content to GLB format
  * 
@@ -30,11 +27,12 @@ let assimpjs = null;
  * `);
  * ```
  * 
+ * @param {any} assimp  An initialised AssimpJS instance
  * @param {string} filename  The name of the model file
- * @param {Uint8Array<ArrayBuffer>} modelBytes  The raw file content to convert
+ * @param {Uint8Array} modelBytes  The raw file content to convert
  * @throws {Error}  If conversion fails
  */
-export const convertModel = async (filename, modelBytes) => {
+export const convertModel = async (assimp, filename, modelBytes) => {
     const xpx = 'convertModel(): Invalid'; // exception prefix
 
     // Check that filename is a valid string, and modelBytes is a Uint8Array.
@@ -51,17 +49,14 @@ export const convertModel = async (filename, modelBytes) => {
     if (!(modelBytes instanceof Uint8Array)) throw new TypeError(
         `${xpx} modelBytes argument type '${typeof modelBytes}', should be 'Uint8Array'`);
 
-    // Initialize AssimpJS, the first time convertModel is called.
-    if (assimpjs === null) assimpjs = await initAssimpjs();
-
     // Create a new AssimpJS file-list object.
-    let fileList = new assimpjs.FileList();
+    let fileList = new assimp.FileList();
     
     fileList.AddFile(filename, modelBytes);
 
     // Convert file list to GLB version 2.
     // Other formats are "assjson", "gltf", "gltf2" and (version 1) "glb".
-    let result = assimpjs.ConvertFileList(fileList, 'glb2');
+    let result = assimp.ConvertFileList(fileList, 'glb2');
 
     // Check if the conversion succeeded.
     if (!result.IsSuccess() || result.FileCount() == 0) {

@@ -1,4 +1,4 @@
-import initAssimpjs from 'assimpjs';
+/** @fileoverview Constants used throughout the app */
 
 const VALID_INPUT_EXTENSIONS = new Set([
     'dae',
@@ -11,8 +11,6 @@ const VALID_INPUT_EXTENSIONS = new Set([
 
 /** @fileoverview Converts a 3D model to GBL format */
 
-
-let assimpjs = null;
 
 /** #### Converts 3D model content to GLB format
  * 
@@ -39,11 +37,12 @@ let assimpjs = null;
  * `);
  * ```
  * 
+ * @param {any} assimp  An initialised AssimpJS instance
  * @param {string} filename  The name of the model file
- * @param {Uint8Array<ArrayBuffer>} modelBytes  The raw file content to convert
+ * @param {Uint8Array} modelBytes  The raw file content to convert
  * @throws {Error}  If conversion fails
  */
-const convertModel = async (filename, modelBytes) => {
+const convertModel = async (assimp, filename, modelBytes) => {
     const xpx = 'convertModel(): Invalid'; // exception prefix
 
     // Check that filename is a valid string, and modelBytes is a Uint8Array.
@@ -60,17 +59,14 @@ const convertModel = async (filename, modelBytes) => {
     if (!(modelBytes instanceof Uint8Array)) throw new TypeError(
         `${xpx} modelBytes argument type '${typeof modelBytes}', should be 'Uint8Array'`);
 
-    // Initialize AssimpJS, the first time convertModel is called.
-    if (assimpjs === null) assimpjs = await initAssimpjs();
-
     // Create a new AssimpJS file-list object.
-    let fileList = new assimpjs.FileList();
+    let fileList = new assimp.FileList();
     
     fileList.AddFile(filename, modelBytes);
 
     // Convert file list to GLB version 2.
     // Other formats are "assjson", "gltf", "gltf2" and (version 1) "glb".
-    let result = assimpjs.ConvertFileList(fileList, 'glb2');
+    let result = assimp.ConvertFileList(fileList, 'glb2');
 
     // Check if the conversion succeeded.
     if (!result.IsSuccess() || result.FileCount() == 0) {
@@ -182,6 +178,17 @@ const validateOptionsProps = (fnName, defaultedOptions) => {
  * @typedef {import('./src/types.js').WriteFile} WriteFile
  */
 
+// Initialize AssimpJS. In Node the 'assimpjs' library is loaded here, but in
+// the browser `<script type="text/javascript" src="assimpjs.js"></script>`
+// has already loaded it into global (window) scope.
+const isNode = typeof process === 'object' && typeof window === 'undefined';
+const initAssimpjs = async () => {
+    const assimpjsModule = await import('assimpjs');
+    return assimpjsModule.default();
+};
+// @ts-expect-error
+const assimp = isNode ? await initAssimpjs() : await window.assimpjs();
+
 /** #### Converts various 3D model formats to GLB
  * 
  * @param {string} inputPath  Location of the input 3D model file
@@ -197,14 +204,14 @@ async function any3dModelToGlb(
     options = {},
     readFile = async (path) => {
         const fs = await import('node:fs/promises');
-        return fs.readFile(path, "utf-8");
+        return fs.readFile(path);
     },
     writeFile = async (
         path,
         data,
     ) => {
         const fs = await import('node:fs/promises');
-        return fs.writeFile(path, data, "utf-8");
+        return fs.writeFile(path, data);
     },
 ) {
     const fn = 'any3dModelToGlb'; // function name
@@ -251,7 +258,11 @@ async function any3dModelToGlb(
         notices.push({ code: 1_5118, message: `Converting ${filename}` });
     let outputData;
     try {
-        outputData = await convertModel(filename, new Uint8Array(Buffer.from(inputData)));
+        outputData = await convertModel(
+            assimp,
+            filename,
+            new Uint8Array(inputData)
+        );
     } catch (error) {
         notices.push({
             code: 4_9480,

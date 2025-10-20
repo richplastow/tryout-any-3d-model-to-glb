@@ -1,3 +1,5 @@
+/** @fileoverview Constants used throughout the app */
+
 export const VALID_INPUT_EXTENSIONS = new Set([
     'dae',
     'glb',

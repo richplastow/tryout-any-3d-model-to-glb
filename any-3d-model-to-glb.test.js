@@ -11,7 +11,7 @@ const mockReadPaths = [];
 /** @type {ReadFile} */
 const mockReadFile = async (path) => {
     mockReadPaths.push(path);
-    return `
+    const objContent = `
         # Minimal cube
         v -0.5 -0.5 -0.5
         v -0.5 -0.5  0.5
@@ -28,6 +28,7 @@ const mockReadFile = async (path) => {
         f 1 3 7 5
         f 2 6 8 4
     `;
+    return new TextEncoder().encode(objContent);
 };
 
 // Mocks writing a file, by recording the most recent `path` and `data` values.

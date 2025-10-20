@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Any 3D Model to GLB</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 100%;
+            padding: 40px;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+        .upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        .upload-text {
+            color: #666;
+            font-size: 1.1em;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .file-info {
+            background: #f5f5f5;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .file-info.visible {
+            display: block;
+        }
+        .file-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .file-size {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-weight: 600;
+        }
+        .button:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .button.download {
+            background: #10b981;
+            margin-top: 15px;
+            display: none;
+        }
+        .button.download.visible {
+            display: block;
+        }
+        .button.download:hover {
+            background: #059669;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+        .notices {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .notices.visible {
+            display: block;
+        }
+        .notices pre {
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 0.85em;
+            color: #374151;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+            display: none;
+        }
+        .status.visible {
+            display: block;
+        }
+        .status.success {
+            color: #10b981;
+        }
+        .status.error {
+            color: #ef4444;
+        }
+        .status.processing {
+            color: #667eea;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        .spinner.visible {
+            display: block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 0.85em;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Any 3D Model to GLB</h1>
+        <p class="subtitle">Convert various 3D model formats to GLB in your browser</p>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📦</div>
+            <div class="upload-text">
+                Click to select a 3D model file or drag and drop
+            </div>
+            <input type="file" id="fileInput" accept=".obj,.fbx,.dae,.gltf,.stl,.ply,.3ds,.blend,.x">
+        </div>
+
+        <div class="file-info" id="fileInfo">
+            <div class="file-name" id="fileName"></div>
+            <div class="file-size" id="fileSize"></div>
+        </div>
+
+        <button class="button" id="convertBtn" disabled>Convert to GLB</button>
+        
+        <div class="spinner" id="spinner"></div>
+        
+        <div class="status" id="status"></div>
+
+        <button class="button download" id="downloadBtn">Download GLB File</button>
+
+        <div class="notices" id="notices">
+            <pre id="noticesContent"></pre>
+        </div>
+
+        <div class="footer">
+            <p>Powered by <a href="https://github.com/assimp/assimp" target="_blank">Assimp</a></p>
+            <p><a href="https://github.com/richplastow/tryout-any-3d-model-to-glb" target="_blank">View on GitHub</a></p>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="assimpjs.js"></script>
+    <script type="module">
+        const defeatCache = Date.now();
+        const module = await import('./any-3d-model-to-glb.js?t=' + defeatCache);
+        const { any3dModelToGlb } = module;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const convertBtn = document.getElementById('convertBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const spinner = document.getElementById('spinner');
+        const status = document.getElementById('status');
+        const notices = document.getElementById('notices');
+        const noticesContent = document.getElementById('noticesContent');
+
+        let selectedFile = null;
+        let selectedOutputPath = null;
+
+        // Create a virtual file system in memory.
+        let fileStore = new Map();
+
+        // Upload area click handler.
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // File input change handler.
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFileSelect(file);
+            }
+        });
+
+        // Drag and drop handlers.
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                handleFileSelect(file);
+            }
+        });
+
+        // Handle file selection.
+        function handleFileSelect(file) {
+            selectedFile = file;
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileInfo.classList.add('visible');
+            convertBtn.disabled = false;
+            
+            // Reset previous conversion.
+            downloadBtn.classList.remove('visible');
+            notices.classList.remove('visible');
+            status.classList.remove('visible');
+        }
+
+        // Convert button click handler.
+        convertBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            // Reset UI.
+            convertBtn.disabled = true;
+            downloadBtn.classList.remove('visible');
+            notices.classList.remove('visible');
+            status.classList.remove('visible');
+            spinner.classList.add('visible');
+
+            try {
+                // Read the file as ArrayBuffer.
+                const arrayBuffer = await selectedFile.arrayBuffer();
+                const inputData = new Uint8Array(arrayBuffer);
+
+                // Store the file to the virtual file system in memory.
+                fileStore.set(selectedFile.name, inputData);
+
+                // Mock readFile function.
+                const mockReadFile = async (path) => {
+                    const data = fileStore.get(path);
+                    if (!data) {
+                        throw new Error(`File not found: ${path}`);
+                    }
+                    return data;
+                };
+
+                // Mock writeFile function.
+                const mockWriteFile = async (path, data) => {
+                    fileStore.set(path, data);
+                };
+
+                // Convert the file.
+                selectedOutputPath = selectedFile.name.replace(/\.[^.]+$/, '.glb');
+                const result = await any3dModelToGlb(
+                    selectedFile.name,
+                    selectedOutputPath,
+                    { noticeLevel: 1 }, // debug level to show all notices
+                    mockReadFile,
+                    mockWriteFile
+                );
+
+                // Hide spinner.
+                spinner.classList.remove('visible');
+
+                // Display notices.
+                if (result.notices && result.notices.length > 0) {
+                    const noticesText = result.notices.map(n => {
+                        const code = n.code.toString();
+                        const level = code[0];
+                        const emoji = level === '4'
+                            ? '❌'
+                            : level === '3'
+                                ? '⚠️'
+                                : level === '2'
+                                    ? 'ℹ️'
+                                    : '🔍';
+                        const c = `${level}_${code.slice(1)}`;
+                        const detail = n.detail ? '\n   ' + n.detail : '';
+                        return `${emoji} ${c}: ${n.message}${detail}`;
+                    }).join('\n');
+                    noticesContent.textContent = noticesText;
+                    notices.classList.add('visible');
+                }
+
+                // Show status.
+                status.classList.add('visible');
+                if (result.didSucceed) {
+                    status.textContent = '✅ Conversion succeeded!';
+                    status.className = 'status visible success';
+                    downloadBtn.classList.add('visible');
+                } else {
+                    status.textContent = '❌ Conversion failed';
+                    status.className = 'status visible error';
+                }
+
+            } catch (error) {
+                spinner.classList.remove('visible');
+                status.textContent = `❌ Error: ${error.message}`;
+                status.className = 'status visible error';
+                noticesContent.textContent = `Error: ${error.message}\n\n${error.stack || ''}`;
+                notices.classList.add('visible');
+            } finally {
+                convertBtn.disabled = false;
+            }
+        });
+
+        // Download button click handler.
+        downloadBtn.addEventListener('click', () => {
+            if (!selectedOutputPath) return;
+            const glbData = fileStore.get(selectedOutputPath);
+            if (!glbData) return;
+
+            const blob = new Blob([glbData], { type: 'model/gltf-binary' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = selectedFile.name.replace(/\.[^.]+$/, '.glb');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // Format file size helper.
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>
