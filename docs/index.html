@@ -70,14 +70,17 @@
         input[type="file"] {
             display: none;
         }
-        .file-info {
+        .input-file-info,
+        .output-file-info {
             background: #f5f5f5;
             border-radius: 6px;
             padding: 15px;
+            margin-top: 5px;
             margin-bottom: 20px;
             display: none;
         }
-        .file-info.visible {
+        .input-file-info.visible,
+        .output-file-info.visible {
             display: block;
         }
         .file-name {
@@ -205,7 +208,15 @@
         .footer a:hover {
             text-decoration: underline;
         }
+        .model-viewer {
+            width: 100%;
+            height: 400px;
+            margin-top: 15px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
     </style>
+    <script src="assimpjs.js"></script>
 </head>
 <body>
     <div class="container">
@@ -220,9 +231,9 @@
             <input type="file" id="fileInput" accept=".obj,.fbx,.dae,.gltf,.stl,.ply,.3ds,.blend,.x">
         </div>
 
-        <div class="file-info" id="fileInfo">
-            <div class="file-name" id="fileName"></div>
-            <div class="file-size" id="fileSize"></div>
+        <div class="input-file-info" id="inputFileInfo">
+            <div class="file-name" id="inputFileName"></div>
+            <div class="file-size" id="inputFileSize"></div>
         </div>
 
         <button class="button" id="convertBtn" disabled>Convert to GLB</button>
@@ -230,6 +241,19 @@
         <div class="spinner" id="spinner"></div>
         
         <div class="status" id="status"></div>
+
+        <div class="output-file-info" id="outputFileInfo">
+            <div class="file-name" id="outputFileName"></div>
+            <div class="file-size" id="outputFileSize"></div>
+            <model-viewer
+                alt=""
+                auto-rotate
+                camera-controls
+                class="model-viewer"
+                id="outputModelViewer"
+                src=""
+            />
+        </div>
 
         <button class="button download" id="downloadBtn">Download GLB File</button>
 
@@ -246,7 +270,6 @@
         </div>
     </div>
 
-    <script type="text/javascript" src="assimpjs.js"></script>
     <script type="module">
         const defeatCache = Date.now();
         const module = await import('./any-3d-model-to-glb.js?t=' + defeatCache);
@@ -254,13 +277,17 @@
 
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileName = document.getElementById('fileName');
-        const fileSize = document.getElementById('fileSize');
+        const inputFileInfo = document.getElementById('inputFileInfo');
+        const inputFileName = document.getElementById('inputFileName');
+        const inputFileSize = document.getElementById('inputFileSize');
         const convertBtn = document.getElementById('convertBtn');
         const downloadBtn = document.getElementById('downloadBtn');
         const spinner = document.getElementById('spinner');
         const status = document.getElementById('status');
+        const outputFileInfo = document.getElementById('outputFileInfo');
+        const outputFileName = document.getElementById('outputFileName');
+        const outputFileSize = document.getElementById('outputFileSize');
+        const outputModelViewer = document.getElementById('outputModelViewer');
         const notices = document.getElementById('notices');
         const noticesDetails = document.getElementById('noticesDetails');
         const noticesContent = document.getElementById('noticesContent');
@@ -306,15 +333,16 @@
         // Handle file selection.
         function handleFileSelect(file) {
             selectedFile = file;
-            fileName.textContent = file.name;
-            fileSize.textContent = formatFileSize(file.size);
-            fileInfo.classList.add('visible');
+            inputFileName.textContent = file.name;
+            inputFileSize.textContent = formatFileSize(file.size);
+            inputFileInfo.classList.add('visible');
             convertBtn.disabled = false;
             
             // Reset previous conversion.
             downloadBtn.classList.remove('visible');
             notices.classList.remove('visible');
             status.classList.remove('visible');
+            outputFileInfo.classList.remove('visible');
         }
 
         // Convert button click handler.
@@ -326,6 +354,7 @@
             downloadBtn.classList.remove('visible');
             notices.classList.remove('visible');
             status.classList.remove('visible');
+            outputFileInfo.classList.remove('visible');
             spinner.classList.add('visible');
 
             // Disable file upload area during conversion.
@@ -408,6 +437,22 @@
                     status.textContent = '✅ Conversion succeeded!';
                     status.className = 'status visible success';
                     downloadBtn.classList.add('visible');
+
+                    // Display output file info and model viewer.
+                    const outputFileEntry = fileStore.get(selectedOutputPath);
+                    if (outputFileEntry) {
+                        // Set output file name and size.
+                        outputFileName.textContent = selectedOutputPath;
+                        outputFileSize.textContent = formatFileSize(outputFileEntry.data.byteLength);
+
+                        // Create a data URL for the model viewer.
+                        const blob = new Blob([outputFileEntry.data], { type: 'model/gltf-binary' });
+                        const dataUrl = URL.createObjectURL(blob);
+                        outputModelViewer.src = dataUrl;
+
+                        // Show the output file info section.
+                        outputFileInfo.classList.add('visible');
+                    }
                 } else {
                     status.textContent = '❌ Conversion failed';
                     status.className = 'status visible error';
@@ -453,5 +498,6 @@
             return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
         }
     </script>
+    <script type="module" src="model-viewer.min.js"></script>
 </body>
 </html>
