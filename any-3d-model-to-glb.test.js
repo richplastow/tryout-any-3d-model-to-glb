@@ -38,6 +38,13 @@ const mockWriteFile = async (path, data) => {
     mockWrittenFiles.push({ path, data });
 };
 
+// Mocks performance.now() to keep tests deterministic.
+let mockTime = 1000;
+const mockTimer = () => {
+    mockTime += 50.1; // increment by 50.1 ms each call
+    return mockTime;
+};
+
 export const testAny3dModelToGlb = async () => {
     const xpx = 'any3dModelToGlb(): '; // exception prefix
 
@@ -61,12 +68,13 @@ export const testAny3dModelToGlb = async () => {
     // SUCCESS
 
     deep(
-        await fn('input.obj', 'output.glb', { noticeLevel: 1 }, mockReadFile, mockWriteFile),
+        await fn('input.obj', 'output.glb', { noticeLevel: 1 }, mockReadFile, mockWriteFile, mockTimer),
         {
             didSucceed: true,
             notices: [
                 { code: 14481, message: 'Reading input file input.obj' },
                 { code: 15118, message: 'Converting input.obj' },
+                { code: 27345, message: 'Converted model in 50.1 ms' },
                 { code: 19158, message: 'Writing output file output.glb' },
                 { code: 26152, message: 'Wrote 228 bytes' }
             ]

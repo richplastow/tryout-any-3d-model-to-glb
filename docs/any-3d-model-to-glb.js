@@ -176,6 +176,7 @@ const validateOptionsProps = (fnName, defaultedOptions) => {
  * @typedef {import('./src/validate-arg.js').DefaultedOptions} DefaultedOptions
  * @typedef {import('./src/types.js').ReadFile} ReadFile
  * @typedef {import('./src/types.js').WriteFile} WriteFile
+ * @typedef {import('./src/types.js').Timer} Timer
  */
 
 // Initialize AssimpJS. In Node the 'assimpjs' library is loaded here, but in
@@ -196,6 +197,7 @@ const assimp = isNode ? await initAssimpjs() : await window.assimpjs();
  * @param {OptionsArgument} [options={}]  Configures the conversion
  * @param {ReadFile} [readFile] Optional async function to read a file - useful for browsers, and testing
  * @param {WriteFile} [writeFile] Optional async function to write a file - useful for browsers, and testing
+ * @param {Timer} [timer]  Optional function returning current time in milliseconds - useful for testing
  * @returns  Promise which resolves when conversion is complete
  */
 async function any3dModelToGlb(
@@ -213,6 +215,7 @@ async function any3dModelToGlb(
         const fs = await import('node:fs/promises');
         return fs.writeFile(path, data);
     },
+    timer = performance.now.bind(performance),
 ) {
     const fn = 'any3dModelToGlb'; // function name
 
@@ -257,6 +260,7 @@ async function any3dModelToGlb(
     if (noticeLevel <= 1)
         notices.push({ code: 1_5118, message: `Converting ${filename}` });
     let outputData;
+    const timeBefore = timer();
     try {
         outputData = await convertModel(
             assimp,
@@ -270,6 +274,14 @@ async function any3dModelToGlb(
             message: `Error converting model ${inputPath} to GLB format`,
         });
         return Promise.resolve({ didSucceed: false, notices });
+    }
+    const timeAfter = timer();
+    if (noticeLevel <= 2) {
+        const timeMs = (timeAfter - timeBefore).toFixed(1);
+        notices.push({
+            code: 2_7345,
+            message: `Converted model in ${timeMs} ms`,
+        });
     }
 
     // Try to write to the output file.

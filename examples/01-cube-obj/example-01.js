@@ -2,13 +2,16 @@ import { any3dModelToGlb } from '../../any-3d-model-to-glb.js';
 
 /**
  * @typedef {import('./src/types.js').WriteFile} WriteFile
+ * @typedef {import('./src/types.js').Timer} Timer
  */
 
 /** #### Runs example 01 - converts a simple cube.obj to GLB format
  * 
  * @param {WriteFile} [writeFile] Optional async function to write a file - useful for testing
+ * @param {Timer} [timer]  Optional function returning current time in milliseconds - useful for testing
+ * @returns  Promise which resolves when conversion is complete
  */
-export const example01 = async (writeFile) => {
+export const example01 = async (writeFile, timer) => {
     const inputPath = './examples/01-cube-obj/cube.obj';
     const outputPath = './example-outputs/example-01-cube.glb';
     return any3dModelToGlb(
@@ -17,6 +20,7 @@ export const example01 = async (writeFile) => {
         { noticeLevel: 1 },
         void 0,
         writeFile,
+        timer,
     );
 };
 
