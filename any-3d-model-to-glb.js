@@ -1,5 +1,6 @@
 /** @fileoverview The main entry-point */
 
+import { convertModel } from "./src/convert-model.js";
 import { validateOptionsObject, validateOptionsProps, validatePath } from "./src/validate-arg.js";
 
 /**
@@ -59,6 +60,7 @@ export async function any3dModelToGlb(
     const notices = [];
 
     // Try to read the input file.
+    notices.push({ code: 1_4481, message: `Reading input file ${inputPath}` });
     let inputData;
     try {
         inputData = await readFile(inputPath);
@@ -71,10 +73,25 @@ export async function any3dModelToGlb(
         return Promise.resolve({ didSucceed: false, notices });
     }
 
-    // TODO implementation goes here
-    const outputData = `${inputData.length} bytes`;
+    // Get the filename from the input path, treating "/" and "\" the same.
+    const filename = inputPath.split(/[/\\]/).pop() || inputPath;
 
-    // Try to read the input file.
+    // Try to convert the model to GLB.
+    notices.push({ code: 1_5118, message: `Converting ${filename}` });
+    let outputData;
+    try {
+        outputData = await convertModel(filename, new Uint8Array(Buffer.from(inputData)));
+    } catch (error) {
+        notices.push({
+            code: 4_9480,
+            detail: error.message,
+            message: `Error converting model ${inputPath} to GLB format`,
+        });
+        return Promise.resolve({ didSucceed: false, notices });
+    }
+
+    // Try to write to the output file.
+    notices.push({ code: 1_9158, message: `Writing output file ${outputPath}` });
     try {
         await writeFile(outputPath, outputData);
     } catch (error) {
@@ -87,6 +104,7 @@ export async function any3dModelToGlb(
     }
 
     // Successful conversion.
+    notices.push({ code: 2_6152, message: `Wrote ${outputData.length} bytes` });
     return Promise.resolve({
         didSucceed: true, // means there are no error-level notices
         notices

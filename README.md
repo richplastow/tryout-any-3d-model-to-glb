@@ -23,7 +23,8 @@ npm install --global rollup
 rollup --version
 # rollup v4.52.5
 npm install
-# (only installs the "@types/node" dev-dependency, ~3 MB for ~150 items)
+# installs the "@types/node" dev-dependency, and assimpjs -
+# ~12 MB for ~200 items
 npm run build
 # any-3d-model-to-glb.js → dist/any-3d-model-to-glb.js...
 # created dist/any-3d-model-to-glb.js in 32ms

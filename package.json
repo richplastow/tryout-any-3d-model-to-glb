@@ -12,6 +12,7 @@
   },
   "license": "MIT",
   "author": "Rich Plastow",
+  "main": "./dist/any-3d-model-to-glb.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/richplastow/tryout-any-3d-model-to-glb.git"
@@ -21,6 +22,9 @@
     "check-types": "tsc --noEmit && echo '\\xE2\\x9C\\x85 No type-errors found!'",
     "ok": "npm test && npm run check-types && npm run build",
     "test": "node test.js"
+  },
+  "dependencies": {
+    "assimpjs": "^0.0.10"
   },
   "devDependencies": {
     "@types/node": "^24.8.1"

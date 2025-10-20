@@ -1,5 +1,7 @@
 /** @fileoverview Validates arguments for various functions */
 
+import { VALID_INPUT_EXTENSIONS } from "./constants.js";
+
 /**
  * @typedef {{
  *   noticeLevel?: number,
@@ -39,10 +41,7 @@ export const validatePath = (fnName, argName, path) => {
     if (argName === 'outputPath' && ext[1] !== 'glb') throw RangeError(
         `${xpx} ${argName} argument extension '.${ext[1]}' is not supported, should be '.glb'`);
     if (argName === 'inputPath') {
-        const validInputExtensions = new Set([
-            '3mf', '3mfz', 'fbx', 'gltf', 'glb', 'obj', 'ply', 'stl', 'wrl', 'wrz', // TODO refine this list
-        ]);
-        if (!validInputExtensions.has(ext[1])) throw RangeError(
+        if (!VALID_INPUT_EXTENSIONS.has(ext[1])) throw RangeError(
             `${xpx} ${argName} argument extension '.${ext[1]}' is not a supported 3D model format`);
     }
 };
